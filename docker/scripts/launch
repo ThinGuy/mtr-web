@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /mtr-app
+export DEF_IP="$(/sbin/ip -o -4 a show dev $(/sbin/ip -o -4 r show default|/bin/grep -m1 -oP \"(?<=dev )[^ ]+\")|/bin/grep -m1 -oP \"(?<=inet )[^/]+\"'):8000"
+/usr/bin/gunicorn -k flask_sockets.worker mtr-web:app -b ${DEF_IP}

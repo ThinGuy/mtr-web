@@ -1,0 +1,32 @@
+FROM ubuntu:18.04
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV container docker
+ENV MTR_TYPE localhost
+
+RUN apt-get -yq update
+
+RUN apt-get -yq install \
+    python \
+    python-pip \
+    virtualenv \
+    gunicorn \
+    python-flask-sockets \
+    curl \
+    nginx-full \
+    git
+
+COPY scripts/default.site /etc/nginx/sites-available/default
+COPY scripts/launch /usr/bin/launch
+
+RUN /usr/bin/git clone https://github.com/thinguy/mtr-web /mtr-web
+
+WORKDIR /mtr-web
+
+ENV DEF_IP 127.0.0.1:8000
+
+EXPOSE 8000
+
+CMD /usr/bin/gnunicorn -k flask_sockets.worker mtr-web:app -b ${DEF_IP}
+
+
