@@ -1,0 +1,31 @@
+FROM ubuntu:18.04
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV container docker
+
+RUN apt-get -yq update
+
+RUN apt-get -yq install \
+    python \
+    python-pip \
+    virtualenv \
+    gunicorn \
+    python-flask-sockets \
+    curl \
+    nginx-full \
+    git
+
+COPY scripts/default.site /etc/nginx/sites-available/default
+COPY scripts/def-ip.sh /usr/local/bin/defs-ip.sh
+
+WORKDIR /mtr-web
+
+RUN git clone https://github.com/thinguy/mtr-web
+
+EXPOSE 8000
+
+CMD ["source", "/usr/local/bin/defs-ip.sh"]
+
+ENV DEF_IP $(/bin/bash -c 'ip " -o "-4 a show dev $(ip -o -4 r show default|grep -m1 -oP "(?<=dev )[^ ]+")|grep -m1 -oP "(?<=inet )[^/]+"')
+
+CMD ["gunicorn", "-k", "flask_sockets.worker", "mtr-web:app", "-b", "${DEF_IP}:8000"]
