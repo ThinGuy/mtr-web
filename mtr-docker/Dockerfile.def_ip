@@ -24,6 +24,8 @@ RUN git clone https://github.com/thinguy/mtr-web
 
 EXPOSE 8000
 
-CMD ["source", "/usr/local/bin/mtr-web"] 
+CMD ["source", "/usr/local/bin/mtr-web"]
+
+ENV DEF_IP $(/bin/bash -c 'ip " -o "-4 a show dev $(ip -o -4 r show default|grep -m1 -oP "(?<=dev )[^ ]+")|grep -m1 -oP "(?<=inet )[^/]+"')yy
 
 CMD ["gunicorn", "-k", "flask_sockets.worker", "mtr-web:app", "-b", "${DEF_IP}:8100"]

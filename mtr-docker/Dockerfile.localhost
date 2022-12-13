@@ -2,7 +2,6 @@ FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV container docker
-#ENV DEF_IP=$(ip " -o "-4 a show dev $(ip -o -4 r show default|grep -m1 -oP "(?<=dev )[^ ]+")|grep -m1 -oP "(?<=inet )[^/]+")
 
 
 RUN apt-get -yq update
@@ -27,4 +26,3 @@ EXPOSE 8000
 
 CMD ["gunicorn", "-k", "flask_sockets.worker", "mtr-web:app"]
 
-#CMD ["gunicorn", "-k", "flask_sockets.worker", "mtr-web:app", "-b", "${DEF_IP}:8100"]
