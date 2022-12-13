@@ -28,7 +28,7 @@ pip install Flask-Sockets gunicorn
 gunicorn -k flask_sockets.worker mtr-web:app
 ```
 
-http://127.0.0.1:8000
+http://127.0.0.1:6892
 
 ## Proxy through nginx
 
@@ -39,11 +39,11 @@ server {
         server_name trace.hamwan.net;
 
         location / {
-                proxy_pass http://127.0.0.1:8000;
+                proxy_pass http://127.0.0.1:6892;
         }
 
         location /mtr {
-                proxy_pass http://127.0.0.1:8000;
+                proxy_pass http://127.0.0.1:6892;
                 proxy_http_version 1.1;
                 proxy_set_header Upgrade $http_upgrade;
                 proxy_set_header Connection "upgrade";
