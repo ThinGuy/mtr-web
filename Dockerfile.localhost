@@ -1,0 +1,35 @@
+FROM ubuntu:18.04
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV container docker
+ENV DEF_IP=$(ip -o -4 a show dev $(ip -o -4 r show default|grep -m1 -oP "(?<=dev )[^ ]+")|grep -m1 -oP "(?<=inet )[^/]+")
+
+
+RUN apt-get -yqf -o Acquire::ForceIPv4=True -o Dpkg::options::=--force-unsafe-io -o Dpkg::Options::=--force-confold --auto-remove --purge update
+
+RUN apt-get -yqf -o Acquire::ForceIPv4=True -o Dpkg::options::=--force-unsafe-io -o Dpkg::Options::=--force-confold --auto-remove --purge install \
+    python \
+    python-pip \
+    virtualenv \
+    gunicorn \
+    python-flask-sockets \
+    curl \
+    nginx-full \
+    avahi-utils \
+    dbconfig-pgsql=2.0.4ubuntu1 \
+    iputils-ping \
+    postgresql \
+    tcpdump \
+    python3-pip
+
+WORKDIR /opt/mtr-web
+
+COPY scripts/default.site /etc/nginx/sites-available/default
+
+RUN systemctl restart nginx.service
+
+EXPOSE 8000
+
+CMD ["gunicorn", "-k", "flask_sockets.worker", "mtr-web:app"]
+
+#CMD ["gunicorn", "-k", "flask_sockets.worker", "mtr-web:app", "-b", "${DEF_IP}:8100"]
