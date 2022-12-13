@@ -21,8 +21,8 @@ RUN git clone https://github.com/thinguy/mtr-web /mtr-web
 
 WORKDIR /mtr-web
 
-EXPOSE 8000
+EXPOSE 6892
 
-CMD gunicorn -k flask_sockets.worker mtr-web:app -b :8000
+CMD gunicorn -k flask_sockets.worker mtr-web:app -b :6892
 
 
