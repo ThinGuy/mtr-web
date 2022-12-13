@@ -2,7 +2,6 @@ FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV container docker
-ENV MTR_TYPE host
 
 RUN apt-get -yq update
 
@@ -17,13 +16,13 @@ RUN apt-get -yq install \
     git
 
 COPY scripts/default.site /etc/nginx/sites-available/default
-COPY scripts/launch /usr/bin/launch
+
+RUN git clone https://github.com/thinguy/mtr-web /mtr-web
 
 WORKDIR /mtr-web
 
-RUN git clone https://github.com/thinguy/mtr-web
-
 EXPOSE 8000
 
-CMD /usr/bin/launch
+CMD gunicorn -k flask_sockets.worker mtr-web:app -b :8000
+
 
